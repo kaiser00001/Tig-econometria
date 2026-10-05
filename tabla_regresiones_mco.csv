@@ -1,0 +1,32 @@
+Variable,N,R2_adj,M1: Base,M2: + Capital Humano,M3: + Laboral/Región,M4: Principal,M5: Robustez <18
+(Intercept),29781,0.0708,13.6409 *** (0.0083),NA,NA,NA,NA
+mujer,29781,0.0708,-0.1374 *** (0.0131),NA,NA,NA,NA
+nhijos,29781,0.0708,-0.0375 *** (0.0048),NA,NA,NA,NA
+mujer:nhijos,29781,0.0708,-0.1184 *** (0.0075),NA,NA,NA,NA
+(Intercept),29781,0.3285,NA,10.7470 *** (0.1470),NA,NA,NA
+mujer,29781,0.3285,NA,-0.2502 *** (0.0113),NA,NA,NA
+nhijos,29781,0.3285,NA,0.0147 *** (0.0042),NA,NA,NA
+edad,29781,0.3285,NA,0.0511 *** (0.0084),NA,NA,NA
+esc,29781,0.3285,NA,0.1238 *** (0.0014),NA,NA,NA
+mujer:nhijos,29781,0.3285,NA,-0.0921 *** (0.0065),NA,NA,NA
+(Intercept),29781,0.4163,NA,NA,10.3414 *** (0.1380),NA,NA
+mujer,29781,0.4163,NA,NA,-0.2015 *** (0.0105),NA,NA
+nhijos,29781,0.4163,NA,NA,0.0066  (0.0042),NA,NA
+edad,29781,0.4163,NA,NA,0.0422 *** (0.0078),NA,NA
+esc,29781,0.4163,NA,NA,0.1198 *** (0.0013),NA,NA
+horas,29781,0.4163,NA,NA,0.0143 *** (0.0005),NA,NA
+mujer:nhijos,29781,0.4163,NA,NA,-0.0672 *** (0.0062),NA,NA
+(Intercept),29781,0.4204,NA,NA,NA,10.4657 *** (0.1390),NA
+mujer,29781,0.4204,NA,NA,NA,-0.1995 *** (0.0107),NA
+nhijos,29781,0.4204,NA,NA,NA,0.0084 ** (0.0042),NA
+edad,29781,0.4204,NA,NA,NA,0.0413 *** (0.0078),NA
+esc,29781,0.4204,NA,NA,NA,0.1083 *** (0.0023),NA
+horas,29781,0.4204,NA,NA,NA,0.0143 *** (0.0005),NA
+mujer:nhijos,29781,0.4204,NA,NA,NA,-0.0675 *** (0.0061),NA
+(Intercept),29781,0.4195,NA,NA,NA,NA,10.4603 *** (0.1399)
+mujer,29781,0.4195,NA,NA,NA,NA,-0.2155 *** (0.0102)
+nhijos_menor,29781,0.4195,NA,NA,NA,NA,0.0156 *** (0.0045)
+edad,29781,0.4195,NA,NA,NA,NA,0.0414 *** (0.0079)
+esc,29781,0.4195,NA,NA,NA,NA,0.1094 *** (0.0023)
+horas,29781,0.4195,NA,NA,NA,NA,0.0143 *** (0.0005)
+mujer:nhijos_menor,29781,0.4195,NA,NA,NA,NA,-0.0683 *** (0.0068)

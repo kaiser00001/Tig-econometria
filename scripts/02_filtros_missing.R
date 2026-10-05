@@ -1,22 +1,39 @@
-# ------------------------------------------------------------------
-# TIG Econometria - Pregunta 2
-# Semana 2: filtros de edad/ocupacion y tratamiento de missing en
-# yoprcor y esc, sobre la base con nhijos ya construido.
-#
-# Requiere haber corrido antes scripts/01_construccion_nhijos.R
-# (o tener casen_2024 con la columna nhijos en el ambiente).
-# ------------------------------------------------------------------
+# ==============================================================================
+# TIG Econometría (ICOM601) - Pregunta 2: Efecto de Hijos sobre Ingreso Laboral
+# Script 02: Filtros de Muestra, Tratamiento de Missings y Variables Econométricas
+# ==============================================================================
+
 library(tidyverse)
+library(haven)
 
-# Submuestra objetivo: personas ocupadas de 25 a 45 anios
-muestra <- casen_2024 |>
-  mutate(activ_num = haven::zap_labels(activ)) |>
-  filter(edad >= 25, edad <= 45, activ_num == 1)
+# 1. Asegurar dependencias de datos
+# ------------------------------------------------------------------------------
+if (!exists("casen_2024") || !"nhijos" %in% names(casen_2024)) {
+  message("Ejecutando scripts/01_construccion_nhijos.R previamente...")
+  source("scripts/01_construccion_nhijos.R")
+}
 
-nrow(muestra)
+# 2. Filtrado de Submuestra Objetivo Inicial
+# ------------------------------------------------------------------------------
+muestra_base <- casen_2024 |>
+  mutate(
+    activ_num = zap_labels(activ),
+    edad_num  = as.numeric(zap_labels(edad)),
+    sexo_num  = zap_labels(sexo)
+  ) |>
+  filter(
+    edad_num >= 25,
+    edad_num <= 45,
+    activ_num == 1,
+    es_jefe_pareja == TRUE
+  )
 
-# Missing en yoprcor y esc dentro de la submuestra filtrada
-muestra |>
+n_inicial <- nrow(muestra_base)
+message("Muestra objetivo inicial (ocupados 25-45 años, jefes/parejas): ", n_inicial)
+
+# 3. Diagnóstico formal de Valores Perdidos (Missing Values)
+# ------------------------------------------------------------------------------
+resumen_na <- muestra_base |>
   summarise(
     n = n(),
     na_yoprcor = sum(is.na(yoprcor)),
@@ -24,33 +41,58 @@ muestra |>
     na_esc = sum(is.na(esc)),
     pct_na_esc = round(100 * na_esc / n, 2)
   )
+print(resumen_na)
 
-# El missing en yoprcor no es aleatorio: se concentra casi por completo
-# en o15 == 9 ("Familiar no remunerado"), donde el 100% de esas
-# observaciones tiene yoprcor = NA. Es estructural (no tienen ingreso
-# laboral por definicion de la categoria), no un problema de
-# no-respuesta, por lo que se excluyen de forma explicita.
-muestra |>
-  mutate(o15_num = haven::zap_labels(o15)) |>
+diagnostico_o15 <- muestra_base |>
+  mutate(o15_num = zap_labels(o15)) |>
   group_by(o15_num) |>
-  summarise(n = n(), na_yoprcor = sum(is.na(yoprcor)), pct_na = round(100 * na_yoprcor / n, 1)) |>
+  summarise(
+    n = n(),
+    na_yoprcor = sum(is.na(yoprcor)),
+    pct_na = round(100 * na_yoprcor / n, 1),
+    .groups = "drop"
+  ) |>
   arrange(desc(pct_na))
+print(diagnostico_o15)
 
-# No hay valores de yoprcor <= 0 (no se necesita filtro adicional por eso)
-muestra |>
-  filter(!is.na(yoprcor)) |>
-  summarise(n_cero_o_neg = sum(yoprcor <= 0), min_val = min(yoprcor))
+# 4. Construcción y tipificación de variables econométricas
+# ------------------------------------------------------------------------------
+df_tig <- muestra_base |>
+  filter(!is.na(yoprcor), yoprcor > 0, !is.na(esc)) |>
+  mutate(
+    # Variable Dependiente:
+    ly = log(as.numeric(yoprcor)),
+    
+    # Ambas dummies disponibles para análisis dual:
+    mujer  = if_else(sexo_num == 2, 1L, 0L), # 1 = Mujer, 0 = Hombre (Base: Hombre)
+    hombre = if_else(sexo_num == 1, 1L, 0L), # 1 = Hombre, 0 = Mujer (Base: Mujer)
+    
+    nhijos = as.integer(nhijos),
+    nhijos_menor = as.integer(nhijos_menor),
+    
+    # Controles de Capital Humano y Demográficos:
+    edad  = as.numeric(edad_num),
+    edad2 = edad^2,
+    esc   = as.numeric(zap_labels(esc)),
+    
+    # Controles Laborales:
+    horas = as.numeric(zap_labels(o10)),
+    
+    # Controles Geográficos:
+    region = as.factor(zap_labels(region)),
+    rural  = if_else(zap_labels(area) == 2, 1L, 0L)
+  )
 
-# Missing en esc no muestra un patron marcado por sexo
-muestra |>
-  group_by(sexo) |>
-  summarise(n = n(), na_esc = sum(is.na(esc)))
+# Imputación de horas si presenta missing menor
+if (any(is.na(df_tig$horas))) {
+  mediana_h <- median(df_tig$horas, na.rm = TRUE)
+  df_tig <- df_tig |> mutate(horas = if_else(is.na(horas), mediana_h, horas))
+}
 
-# Muestra final: se excluyen los "familiar no remunerado" (sin ingreso
-# por definicion, 145 obs) junto con el resto de los NA en yoprcor y
-# esc (no-respuesta dispersa, ~2% y ~0.2% de la submuestra respectivamente)
-muestra_final <- muestra |>
-  filter(!is.na(yoprcor), !is.na(esc))
-
-nrow(muestra_final)
-nrow(muestra) - nrow(muestra_final)
+# 5. Balance Muestral Final
+# ------------------------------------------------------------------------------
+n_final <- nrow(df_tig)
+message("=================================================================")
+message("Muestra final para estimación econométrica: N = ", n_final)
+message("Hombres = ", sum(df_tig$hombre == 1), " | Mujeres = ", sum(df_tig$mujer == 1))
+message("=================================================================")

@@ -21,7 +21,7 @@ summary(casen_2024$yoprcor)
 codigos_hijo <- c(4, 5, 6)
 
 nhijos_hogar <- casen_2024 |>
-  mutate(pco1_num = haven::zap_labels(pco1)) |>
+  mutate(pco1_num = haven::zap_labels(pco1)) |>load("casen_2024.RData")
   mutate(es_hijo = pco1_num %in% codigos_hijo) |>
   group_by(folio) |>
   summarise(nhijos = sum(es_hijo, na.rm = TRUE), .groups = "drop")

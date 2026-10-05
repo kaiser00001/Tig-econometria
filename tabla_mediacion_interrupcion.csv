@@ -1,0 +1,26 @@
+Variable,R2,A: Principal (sin mediador),B: + Años Cuidado Intensivo,C: Experiencia Interrumpida,D: + Hijo Preescolar
+mujer,0.4204,-0.1995 *** (0.0107),NA,NA,NA
+nhijos,0.4204,0.0084 ** (0.0042),NA,NA,NA
+esc,0.4204,0.1083 *** (0.0023),NA,NA,NA
+horas,0.4204,0.0143 *** (0.0005),NA,NA,NA
+mujer:nhijos,0.4204,-0.0675 *** (0.0061),NA,NA,NA
+mujer,0.4211,NA,-0.1974 *** (0.0107),NA,NA
+nhijos,0.4211,NA,-0.0018  (0.0046),NA,NA
+anios_cuidado_intensivo,0.4211,NA,0.0115 *** (0.0023),NA,NA
+esc,0.4211,NA,0.1078 *** (0.0023),NA,NA
+horas,0.4211,NA,0.0143 *** (0.0005),NA,NA
+mujer:nhijos,0.4211,NA,-0.0648 *** (0.0064),NA,NA
+mujer:anios_cuidado_intensivo,0.4211,NA,-0.0008  (0.0036),NA,NA
+mujer,0.4183,NA,NA,-0.2050 *** (0.0107),NA
+nhijos,0.4183,NA,NA,0.0205 *** (0.0042),NA
+exp_interrumpida,0.4183,NA,NA,0.0042 ** (0.0020),NA
+esc,0.4183,NA,NA,0.1208 *** (0.0024),NA
+horas,0.4183,NA,NA,0.0143 *** (0.0005),NA
+mujer:nhijos,0.4183,NA,NA,-0.0675 *** (0.0062),NA
+mujer,0.4208,NA,NA,NA,-0.1972 *** (0.0108)
+nhijos,0.4208,NA,NA,NA,-0.0007  (0.0047)
+hijo_preescolar,0.4208,NA,NA,NA,0.0443 *** (0.0107)
+esc,0.4208,NA,NA,NA,0.1080 *** (0.0023)
+horas,0.4208,NA,NA,NA,0.0143 *** (0.0005)
+mujer:nhijos,0.4208,NA,NA,NA,-0.0638 *** (0.0066)
+mujer:hijo_preescolar,0.4208,NA,NA,NA,-0.0137  (0.0161)

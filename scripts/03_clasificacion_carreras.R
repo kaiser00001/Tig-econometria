@@ -1,37 +1,22 @@
-# ------------------------------------------------------------------
-# TIG Econometria - Pregunta 2
-# Limpieza y agrupacion de la variable de carrera/programa de estudios
-# (texto libre, variable e7) en categorias equivalentes, para usar
-# como control adicional ("area de estudio") en el modelo de ingreso.
-#
-# Requiere casen_2024 cargado (con nhijos ya construido opcionalmente,
-# ver scripts/01_construccion_nhijos.R).
-# ------------------------------------------------------------------
+# ==============================================================================
+# TIG Econometría (ICOM601) - Pregunta 2: Efecto de Hijos sobre Ingreso Laboral
+# Script 03: Clasificación de Carreras Universitarias / Técnicas (Variable e7)
+# ==============================================================================
+
 library(tidyverse)
 library(stringi)
+library(haven)
 
-# ------------------------------------------------------------------
-# 1. Acotar a la muestra objetivo con estudios de educacion superior
-#    e6a: 12 = Tecnico Nivel Superior, 13 = Profesional,
-#         14 = Magister, 15 = Doctorado
-# ------------------------------------------------------------------
-edu_superior <- casen_2024 |>
-  mutate(
-    activ_num = haven::zap_labels(activ),
-    e6a_num = haven::zap_labels(e6a)
-  ) |>
-  filter(edad >= 25, edad <= 45, activ_num == 1, e6a_num %in% c(12, 13, 14, 15)) |>
-  filter(!is.na(e7), e7 != "")
+# 1. Asegurar dependencias de datos
+# ------------------------------------------------------------------------------
+if (!exists("df_tig")) {
+  message("Ejecutando scripts/02_filtros_missing.R previamente...")
+  source("scripts/02_filtros_missing.R")
+}
 
-nrow(edu_superior)
-
-# ------------------------------------------------------------------
-# 2. Normalizar el texto libre: minusculas, sin tildes, sin puntuacion,
-#    espacios simples. Esto es lo que permite que "ingeco", "ING.C",
-#    "ing.c" e "Ingeniería Comercial" terminen comparandose de forma
-#    consistente.
-# ------------------------------------------------------------------
-normalizar <- function(x) {
+# 2. Función de normalización de texto libre
+# ------------------------------------------------------------------------------
+normalizar_texto <- function(x) {
   x <- str_to_lower(x)
   x <- stri_trans_general(x, "Latin-ASCII")
   x <- str_replace_all(x, "[[:punct:]]", " ")
@@ -39,29 +24,9 @@ normalizar <- function(x) {
   x
 }
 
-edu_superior <- edu_superior |>
-  mutate(e7_norm = normalizar(e7))
-
-# ------------------------------------------------------------------
-# 3. Diccionario de equivalencias por regex, en orden de prioridad
-#    (patrones mas especificos primero para evitar que una categoria
-#    general "atrape" casos que deberian ir a una mas especifica).
-#
-#    Se usan "raices" de palabra (ingenier\\w*, tecnic\\w*, etc.) para
-#    que una misma carrera escrita como "ingenieria X", "ingeniero(a)
-#    X" o abreviada ("ingeco", "ing.c", "ING COM") caiga en la misma
-#    categoria. Cobertura actual: ~35 categorias especificas + "Otra
-#    carrera" para el resto (long tail de ~4.700 respuestas distintas,
-#    65.5% de cobertura en la submuestra de educacion superior).
-#
-#    Nota tecnica: al combinar con paste0() una raiz que ya contiene
-#    alternancias "|" (como PED, que agrupa pedagog\\w*/profesor\\w*/
-#    educador\\w*), esa raiz debe ir entre parentesis no captantes
-#    "(?:...)" para que el "|" no se "fugue" fuera de la raiz y rompa
-#    la prioridad del case_when (bug detectado y corregido en esta
-#    version: la primera version sin parentesis clasificaba CUALQUIER
-#    "pedagogia..." como "Pedagogía en Educación Física").
-# ------------------------------------------------------------------
+# 3. Diccionario de clasificación por expresiones regulares (Regex)
+# ------------------------------------------------------------------------------
+# Se emplean grupos no captantes (?:...) para evitar fugas del operador OR (|)
 clasificar_carrera <- function(x_norm) {
   ING <- "ingenier\\w*"
   TEC <- "tecnic\\w*"
@@ -128,96 +93,94 @@ clasificar_carrera <- function(x_norm) {
     str_detect(x_norm, "diseno grafico") ~ "Diseño Gráfico",
     str_detect(x_norm, "gastronomia") ~ "Gastronomía",
 
-    TRUE ~ "Otra carrera / no clasificada específicamente"
+    TRUE ~ "Otra carrera universitaria/técnica"
   )
 }
 
-edu_superior <- edu_superior |>
-  mutate(carrera_grupo = clasificar_carrera(e7_norm))
-
-# Prueba de humo: variantes de escritura de una misma carrera deben
-# caer en la misma categoria
-stopifnot(
-  clasificar_carrera(
-    normalizar(c("ingeco", "ING.C", "ing.c", "ingenieria comercial", "Ing. Comercial", "ingeniero(a) comercial"))
-  ) |>
-    unique() |>
-    length() == 1
-)
-
-# ------------------------------------------------------------------
-# 4. Cobertura del diccionario (35 categorias especificas)
-# ------------------------------------------------------------------
-tabla_cobertura <- edu_superior |>
-  count(carrera_grupo, sort = TRUE) |>
-  mutate(pct = round(100 * n / sum(n), 1))
-
-print(tabla_cobertura, n = 55)
-
-# ------------------------------------------------------------------
-# 5. Variable colapsada (area_amplia) para usar como control en el
-#    modelo de la Pregunta 2, con pocas categorias y mas obs. por
-#    celda. carrera_grupo se conserva intacto (~35 niveles) para
-#    analisis mas finos si se necesita profundizar en una carrera
-#    especifica.
-# ------------------------------------------------------------------
-colapsar_area <- function(carrera_grupo) {
+# 4. Agrupación en Áreas Amplias de Estudio
+# ------------------------------------------------------------------------------
+colapsar_area <- function(carrera) {
   case_when(
-    carrera_grupo %in% c(
+    carrera %in% c(
       "Ingeniería Comercial", "Ingeniería en Administración de Empresas",
       "Administración de Empresas", "Técnico en Administración de Empresas",
       "Contabilidad / Auditoría", "Administración Pública", "Publicidad"
     ) ~ "Administración y Negocios",
 
-    carrera_grupo %in% c(
+    carrera %in% c(
       "Ingeniería Civil Industrial", "Ingeniería Industrial", "Ingeniería en Informática",
       "Técnico en Informática", "Ingeniería en Construcción", "Técnico en Construcción",
       "Ingeniería Civil", "Ingeniería Eléctrica", "Técnico en Electricidad",
       "Ingeniería Mecánica", "Técnico en Mecánica Automotriz", "Arquitectura",
       "Ingeniería en Minas", "Diseño Gráfico", "Ingeniería en Prevención de Riesgos",
       "Técnico en Prevención de Riesgos"
-    ) ~ "Ingeniería, Construcción y Tecnología",
+    ) ~ "Ingeniería y Tecnología",
 
-    carrera_grupo %in% c(
+    carrera %in% c(
       "Técnico en Enfermería", "Enfermería", "Kinesiología", "Fonoaudiología",
       "Terapia Ocupacional", "Nutrición y Dietética", "Tecnología Médica",
       "Técnico en Odontología", "Odontología", "Medicina", "Medicina Veterinaria",
       "Química y Farmacia"
     ) ~ "Salud",
 
-    carrera_grupo %in% c(
+    carrera %in% c(
       "Educación/Técnico en Párvulos", "Pedagogía Básica", "Pedagogía en Educación Física",
       "Otra Pedagogía", "Pedagogía Diferencial", "Psicopedagogía", "Pedagogía en Inglés",
       "Pedagogía en Historia", "Pedagogía en Matemáticas", "Pedagogía en Lenguaje",
       "Pedagogía en Música"
     ) ~ "Educación",
 
-    carrera_grupo %in% c(
+    carrera %in% c(
       "Trabajo Social", "Psicología", "Sociología", "Periodismo", "Técnico Jurídico"
-    ) ~ "Ciencias Sociales y Comunicación",
+    ) ~ "Ciencias Sociales y Humanidades",
 
-    carrera_grupo == "Derecho" ~ "Derecho",
-    carrera_grupo == "Gastronomía" ~ "Servicios",
-    carrera_grupo == "Agronomía" ~ "Agropecuario",
+    carrera == "Derecho" ~ "Derecho",
+    carrera == "Agronomía" ~ "Agropecuario",
+    carrera == "Gastronomía" ~ "Servicios",
+    carrera == "Otra carrera universitaria/técnica" ~ "Otra educación superior",
 
-    is.na(carrera_grupo) ~ NA_character_,
-    TRUE ~ "Otra / no clasificada"
+    TRUE ~ "Sin educación superior"
   )
 }
 
-edu_superior <- edu_superior |>
-  mutate(area_amplia = colapsar_area(carrera_grupo))
-
-edu_superior |>
-  count(area_amplia, sort = TRUE) |>
-  mutate(pct = round(100 * n / sum(n), 1))
-
-# ------------------------------------------------------------------
-# 6. Union de vuelta a casen_2024 (por folio/id_persona)
-# ------------------------------------------------------------------
-casen_2024 <- casen_2024 |>
-  select(-any_of(c("carrera_grupo", "area_amplia"))) |>
-  left_join(
-    edu_superior |> select(folio, id_persona, carrera_grupo, area_amplia),
-    by = c("folio", "id_persona")
+# 5. Aplicación a la Muestra Analítica
+# ------------------------------------------------------------------------------
+# Corrección metodológica fundamental:
+# Quienes NO tienen educación superior (e6a < 12) se codifican explícitamente como
+# "Sin educación superior", evitando que el modelo econométrico descarte al ~50%
+# de la muestra por presencia de NA.
+df_tig <- df_tig |>
+  mutate(
+    e6a_num   = zap_labels(e6a),
+    tiene_sup = e6a_num %in% c(12, 13, 14, 15),
+    e7_texto  = if_else(tiene_sup & !is.na(e7), normalizar_texto(e7), ""),
+    carrera_grupo = if_else(tiene_sup & e7_texto != "", clasificar_carrera(e7_texto), "Sin educación superior"),
+    area_estudio  = colapsar_area(carrera_grupo),
+    area_estudio  = factor(area_estudio, levels = c(
+      "Sin educación superior",
+      "Administración y Negocios",
+      "Ingeniería y Tecnología",
+      "Salud",
+      "Educación",
+      "Ciencias Sociales y Humanidades",
+      "Derecho",
+      "Agropecuario",
+      "Servicios",
+      "Otra educación superior"
+    ))
   )
+
+# Prueba de humo de normalización y clasificación
+stopifnot(
+  clasificar_carrera(normalizar_texto(c("ingeco", "ING.C", "ing.c", "ingenieria comercial", "Ing. Comercial"))) |>
+    unique() |> length() == 1
+)
+
+# 6. Reporte de Distribución y Exportación de la Base Final Procesada
+# ------------------------------------------------------------------------------
+message("Distribución de la variable agregada de área de estudio:")
+print(table(df_tig$area_estudio))
+
+# Guardar base limpia consolidada para acelerar los análisis econométricos
+saveRDS(df_tig, file = "df_tig_procesada.rds")
+message("Base consolidada guardada exitosamente en 'df_tig_procesada.rds'")

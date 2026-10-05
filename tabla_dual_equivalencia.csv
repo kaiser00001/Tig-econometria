@@ -1,0 +1,5 @@
+Concepto Económico,"Enfoque 1 (Base Hombres, dummy 'mujer')","Enfoque 2 (Base Mujeres, dummy 'hombre')"
+Efecto Hijos en Hombres,0.0084 ** (beta_2 directo),0.0084 ** (alpha_2 + alpha_3)
+Efecto Hijos en Mujeres (Child Penalty),-0.0591 *** [SE: 0.0047] (beta_2 + beta_3),-0.0591 *** [SE: 0.0047] (alpha_2 directo)
+Diferencial por Sexo,-0.0675 *** (beta_3),+0.0675 *** (alpha_3)
+Brecha Base sin Hijos,-0.1995 *** (beta_1),+0.1995 *** (alpha_1)
