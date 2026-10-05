@@ -37,12 +37,12 @@
 \maketitle
 
 \begin{abstract}
-Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. La evidencia gráfica ilustra una marcada asimetría: mientras el ingreso masculino se mantiene estable ante la paternidad, el ingreso femenino experimenta caídas del $20.2\%$ al primer hijo y hasta un $38.7\%$ con tres o más hijos. Se complementa con un análisis de mediación sobre años de cuidado intensivo preescolar e interrupción de carrera.
+Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. La evidencia gráfica ilustra una marcada asimetría: mientras el ingreso masculino se mantiene estable ante la paternidad, el ingreso femenino experimenta caídas del $20.2\%$ al primer hijo y hasta un $38.7\%$ con tres o más hijos. Finalmente, se exploran modelos de segmentación ocupacional (controlando por labores de limpieza y nivel de instrucción) y análisis de mediación de carrera laboral.
 \end{abstract}
 
 \vspace{0.3cm}
 \noindent \textbf{Clasificación JEL:} J13, J16, J22, J31. \\
-\textbf{Palabras clave:} Brecha de género, penalización por hijo (\textit{child penalty}), MCO, análisis gráfico, CASEN 2024, ecuación de Mincer.
+\textbf{Palabras clave:} Brecha de género, penalización por hijo (\textit{child penalty}), MCO, ocupaciones de limpieza, segmentación laboral, CASEN 2024.
 
 \vspace{0.5cm}
 
@@ -100,6 +100,7 @@ El vector de controles $\mathbf{X}_i$ se incorpora de forma secuencial:
     \item \textbf{Capital Humano:} Años de escolaridad ($\text{esc}_i$), edad y edad al cuadrado ($\text{edad}_i, \text{edad}_i^2$) para modelar la concavidad del ciclo de vida.
     \item \textbf{Oferta Laboral:} Horas semanales trabajadas habitualmente ($\text{horas}_i$).
     \item \textbf{Geografía y Especialización:} Dummy de área rural ($\text{rural}_i$), efectos fijos por región administrativa y área de estudios superiores.
+    \item \textbf{Segmentación y Ocupación Vulnerable:} Dummies específicas para trabajadores sin educación superior (\texttt{sin\_estudios\_sup}) y trabajadores en ocupaciones de limpieza y servicio doméstico (\texttt{trabaja\_limpieza}, CIUO-08 código 91).
 \end{itemize}
 
 \subsection{Interpretación Marginal y Test de Hipótesis}
@@ -107,11 +108,7 @@ El efecto marginal de un hijo adicional para las mujeres está dado por la suma 
 \begin{equation}
     \frac{\partial \mathbb{E}[\ln(Y) \mid \mathbf{X}]}{\partial \text{nhijos}} \Bigg|_{\text{mujer}=1} = \beta_2 + \beta_3
 \end{equation}
-Se contrasta formalmente la hipótesis nula de nulidad de penalización en mujeres:
-\begin{equation*}
-    H_0: \beta_2 + \beta_3 = 0 \quad \text{vs.} \quad H_1: \beta_2 + \beta_3 < 0
-\end{equation*}
-mediante un test $F$ de restricciones lineales (\texttt{linearHypothesis}) con matriz de covarianzas robusta a heterocedasticidad $HC_1$.
+Se contrasta formalmente la hipótesis nula de nulidad de penalización en mujeres ($H_0: \beta_2 + \beta_3 = 0$) mediante un test $F$ de restricciones lineales (\texttt{linearHypothesis}) con matriz de covarianzas robusta $HC_1$.
 
 % ------------------------------------------------------------------------------
 \section{Resultados Empíricos}
@@ -139,6 +136,7 @@ Hijos menores 18 años & 1.04 & 0.96 & 1.11 & 0.94 & +0.07 & $<0.001$ \\
 Edad (años) & 35.8 & 5.9 & 36.1 & 5.8 & +0.3 & $<0.001$ \\
 Años de escolaridad & 12.8 & 3.2 & 13.4 & 3.3 & +0.6 & $<0.001$ \\
 Horas semanales habituales & 44.1 & 7.8 & 38.9 & 10.4 & -5.2 & $<0.001$ \\
+Trabajadores en limpieza (CIUO 91) & \multicolumn{2}{c}{1.8\%} & \multicolumn{2}{c}{7.3\%} & +5.5\% & $<0.001$ \\
 \bottomrule
 \end{tabular}
 }
@@ -171,53 +169,59 @@ Al incorporar la distinción de género (Figura \ref{fig:genero}), dividiendo la
 
 Esta evidencia gráfica demuestra visualmente que la brecha salarial se expande drásticamente con la llegada de los hijos: pasa de un modesto $8.2\%$ en personas sin hijos a un $20.7\%$ con 1 hijo, $30.2\%$ con 2 hijos y más del $33.5\%$ con 3 o más hijos, motivando el término de interacción econométrico estimado a continuación.
 
-\subsection{Modelos Secuenciales (Especificación Principal: Base Hombres)}
-El Cuadro \ref{tab:regresiones} presenta la estimación secuencial del Modelo Principal (Ecuación \ref{eq:mco_base_hombre}) con errores estándar robustos $HC_1$.
+\subsection{Modelos Secuenciales MCO (Modelos 1 a 6)}
+El Cuadro \ref{tab:regresiones} presenta la estimación secuencial del Modelo MCO con errores estándar robustos $HC_1$, incorporando el Modelo 6 de segmentación ocupacional.
 
 \begin{table}[htbp]
 \centering
-\caption{Estimación MCO Principal: Base Hombres con Interacción (Errores Robustos $HC_1$)}
+\caption{Estimaciones MCO Secuenciales con Interacción (Errores Robustos $HC_1$)}
 \label{tab:regresiones}
 \small
 \resizebox{\textwidth}{!}{
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
-\textbf{Variable} & \textbf{(1) Base} & \textbf{(2) + Cap. Hum.} & \textbf{(3) + Laboral/Reg.} & \textbf{(4) Principal} & \textbf{(5) Robustez $<$18} \\
+\textbf{Variable} & \textbf{(1) Base} & \textbf{(2) + Cap. Hum.} & \textbf{(3) + Laboral/Reg.} & \textbf{(4) Principal} & \textbf{(5) Robustez $<$18} & \textbf{(6) + Limpieza / Sin Sup.} \\
 \midrule
-Constante & 13.6409*** & 10.7470*** & 10.3414*** & 10.4657*** & 10.4603*** \\
- & (0.0083) & (0.1470) & (0.1380) & (0.1390) & (0.1399) \\
+Constante & 13.6409*** & 10.7470*** & 10.3414*** & 10.4657*** & 10.4603*** & 11.8606*** \\
+ & (0.0083) & (0.1470) & (0.1380) & (0.1390) & (0.1399) & (0.1467) \\
 \addlinespace
-\texttt{mujer} & -0.1374*** & -0.2502*** & -0.2015*** & -0.1995*** & -0.2155*** \\
- & (0.0131) & (0.0113) & (0.0105) & (0.0107) & (0.0102) \\
+\texttt{mujer} & -0.1374*** & -0.2502*** & -0.2015*** & -0.1995*** & -0.2155*** & -0.1678*** \\
+ & (0.0131) & (0.0113) & (0.0105) & (0.0107) & (0.0102) & (0.0112) \\
 \addlinespace
-\texttt{nhijos} (Efecto en Hombres) & -0.0375*** & 0.0147*** & 0.0066 & 0.0084** & -- \\
- & (0.0048) & (0.0042) & (0.0042) & (0.0042) & -- \\
+\texttt{nhijos} (Efecto en Hombres) & -0.0375*** & 0.0147*** & 0.0066 & 0.0084** & -- & -0.0065 \\
+ & (0.0048) & (0.0042) & (0.0042) & (0.0042) & -- & (0.0044) \\
 \addlinespace
-\texttt{mujer $\times$ nhijos} & -0.1184*** & -0.0921*** & -0.0672*** & -0.0675*** & -- \\
- & (0.0075) & (0.0065) & (0.0062) & (0.0061) & -- \\
+\texttt{mujer $\times$ nhijos} & -0.1184*** & -0.0921*** & -0.0672*** & -0.0675*** & -- & -0.0750*** \\
+ & (0.0075) & (0.0065) & (0.0062) & (0.0061) & -- & (0.0064) \\
 \addlinespace
-\texttt{nhijos\_menor} & -- & -- & -- & -- & 0.0156*** \\
- & -- & -- & -- & -- & (0.0045) \\
+\texttt{nhijos\_menor} & -- & -- & -- & -- & 0.0156*** & -- \\
+ & -- & -- & -- & -- & (0.0045) & -- \\
 \addlinespace
-\texttt{mujer $\times$ nhijos\_menor} & -- & -- & -- & -- & -0.0683*** \\
- & -- & -- & -- & -- & (0.0068) \\
+\texttt{mujer $\times$ nhijos\_menor} & -- & -- & -- & -- & -0.0683*** & -- \\
+ & -- & -- & -- & -- & (0.0068) & -- \\
 \addlinespace
-Años de escolaridad & -- & 0.1238*** & 0.1198*** & 0.1083*** & 0.1094*** \\
- & -- & (0.0014) & (0.0013) & (0.0023) & (0.0023) \\
+\texttt{sin\_estudios\_sup} & -- & -- & -- & -- & -- & -0.6052*** \\
+ & -- & -- & -- & -- & -- & (0.0074) \\
 \addlinespace
-Edad & -- & 0.0511*** & 0.0422*** & 0.0413*** & 0.0414*** \\
- & -- & (0.0084) & (0.0078) & (0.0078) & (0.0079) \\
+\texttt{trabaja\_limpieza} & -- & -- & -- & -- & -- & -0.1718*** \\
+ & -- & -- & -- & -- & -- & (0.0148) \\
 \addlinespace
-Horas habituales & -- & -- & 0.0143*** & 0.0143*** & 0.0143*** \\
- & -- & -- & (0.0005) & (0.0005) & (0.0005) \\
+Años de escolaridad & -- & 0.1238*** & 0.1198*** & 0.1083*** & 0.1094*** & -- \\
+ & -- & (0.0014) & (0.0013) & (0.0023) & (0.0023) & -- \\
+\addlinespace
+Edad & -- & 0.0511*** & 0.0422*** & 0.0413*** & 0.0414*** & 0.0640*** \\
+ & -- & (0.0084) & (0.0078) & (0.0078) & (0.0079) & (0.0082) \\
+\addlinespace
+Horas habituales & -- & -- & 0.0143*** & 0.0143*** & 0.0143*** & 0.0145*** \\
+ & -- & -- & (0.0005) & (0.0005) & (0.0005) & (0.0005) \\
 \midrule
-Efectos Región / Rural & No & No & Sí & Sí & Sí \\
-Área Estudio Sup. & No & No & No & Sí & Sí \\
+Efectos Región / Rural & No & No & Sí & Sí & Sí & Sí \\
+Área Estudio Sup. & No & No & No & Sí & Sí & Control Directo \\
 \midrule
-Observaciones ($N$) & 29.781 & 29.781 & 29.781 & 29.781 & 29.781 \\
-$R^2$ Ajustado & 0.0708 & 0.3285 & 0.4163 & 0.4204 & 0.4195 \\
+Observaciones ($N$) & 29.781 & 29.781 & 29.781 & 29.781 & 29.781 & 29.781 \\
+$R^2$ Ajustado & 0.0708 & 0.3285 & 0.4163 & 0.4204 & 0.4195 & 0.3520 \\
 \bottomrule
-\multicolumn{6}{l}{\footnotesize Errores estándar robustos tipo $HC_1$ entre paréntesis. * $p < 0.1$, ** $p < 0.05$, *** $p < 0.001$.}
+\multicolumn{7}{l}{\footnotesize Errores estándar robustos tipo $HC_1$ entre paréntesis. * $p < 0.1$, ** $p < 0.05$, *** $p < 0.001$.}
 \end{tabular}
 }
 \end{table}
@@ -226,8 +230,14 @@ $R^2$ Ajustado & 0.0708 & 0.3285 & 0.4163 & 0.4204 & 0.4195 \\
 \begin{enumerate}
     \item \textbf{Sesgo de Variable Omitida (OVB):} En el Modelo 1, $\hat{\beta}_2 = -0.0375$ era negativo debido a la correlación negativa entre fertilidad y nivel socioeconómico ($\text{Cov}(\text{nhijos}, \text{esc}) < 0$). Al controlar por escolaridad en el Modelo 2 ($\hat{\gamma}_{\text{esc}} \approx +12\%$), $\hat{\beta}_2$ se torna positivo ($+0.0147$).
     \item \textbf{Premio por paternidad en hombres:} En el Modelo 4, cada hijo se asocia a un modesto incremento de $+0.84\%$ en el ingreso de los hombres ($\hat{\beta}_2 = +0.0084$, $p < 0.05$).
-    \item \textbf{Penalización neta en mujeres:} Para las mujeres, cada hijo reduce el ingreso en un \textbf{$-5.74\%$} ($\hat{\beta}_2 + \hat{\beta}_3 = 0.0084 - 0.0675 = -0.0591$, $p < 0.001$, con $\text{SE} = 0.0051$).
+    \item \textbf{Penalización neta en mujeres:} Para las mujeres, cada hijo reduce el ingreso en un \textbf{$-5.74\%$} en el Modelo 4 ($\hat{\beta}_2 + \hat{\beta}_3 = 0.0084 - 0.0675 = -0.0591$, $p < 0.001$, con $\text{SE} = 0.0051$).
     \item \textbf{Canal de intensidad laboral:} Al incorporar las horas habituales (M2 vs. M3), el diferencial $\beta_3$ se modera de $-0.0921$ a $-0.0672$, evidenciando que aproximadamente un 27\% de la brecha por hijo opera a través de la reducción de la jornada laboral hacia empleos de tiempo parcial.
+    \item \textbf{Segmentación en Ocupaciones Vulnerables (Modelo 6):} Al incorporar explícitamente la falta de educación superior y el empleo en labores de limpieza y servicio doméstico (CIUO-08 código 91), se revelan dos hechos notables:
+    \begin{itemize}
+        \item Quienes no poseen estudios superiores sufren un castigo salarial de $-60.5\%$ ($\hat{\beta} = -0.6052$, $p < 0.001$).
+        \item El empleo en el sector de limpieza impone una penalización adicional de $-17.2\%$ ($\hat{\beta} = -0.1718$, $p < 0.001$) a igual jornada y ubicación.
+        \item El coeficiente de interacción se mantiene intensamente negativo ($\hat{\beta}_3 = -0.0750$, $p < 0.001$), lo que demuestra que el \textit{child penalty} femenino no se disuelve al aislar a los trabajadores en empleos vulnerables, sino que castiga a las mujeres a lo largo de toda la estructura ocupacional.
+    \end{itemize}
 \end{enumerate}
 
 \subsection{Análisis de Mediación: Interrupción de Carrera y Demanda de Cuidado Temprano}
