@@ -37,7 +37,7 @@
 \maketitle
 
 \begin{abstract}
-Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. La evidencia gráfica ilustra una pronunciada divergencia: mientras el ingreso masculino se mantiene estable ante la paternidad, el ingreso femenino experimenta caídas del $20.2\%$ al primer hijo y hasta un $38.7\%$ con tres o más hijos. Se complementa con un análisis de mediación sobre años de cuidado intensivo preescolar e interrupción de carrera.
+Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. La evidencia gráfica ilustra una marcada asimetría: mientras el ingreso masculino se mantiene estable ante la paternidad, el ingreso femenino experimenta caídas del $20.2\%$ al primer hijo y hasta un $38.7\%$ con tres o más hijos. Se complementa con un análisis de mediación sobre años de cuidado intensivo preescolar e interrupción de carrera.
 \end{abstract}
 
 \vspace{0.3cm}
@@ -80,10 +80,10 @@ En CASEN no existe una pregunta directa pre-construida de hijos por individuo en
 La variable dependiente es $\ln(\text{yoprcor})$ (ingreso de la ocupación principal corregido). Al diagnosticar los datos perdidos (\textit{NAs}) en la submuestra objetivo, se detectó que el 100\% de las observaciones con valor faltante en ingreso correspondían a la categoría contractual $\text{o15} = 9$ (\textit{Familiar no remunerado}, 145 casos). Dado que estos trabajadores no perciben remuneración por contrato, su exclusión es de carácter estructural y no obedece a un sesgo de atrición o no-respuesta aleatoria. La muestra final limpia asciende a $N = 29.781$ observaciones, superando con holgura el mínimo exigido de 300 casos.
 
 % ------------------------------------------------------------------------------
-\section{Estrategia Econométrica y Dualidad de Modelos}
+\section{Estrategia Econométrica}
 % ------------------------------------------------------------------------------
-\subsection{Especificación Principal (Enfoque A: Base Hombres)}
-Siguiendo la propuesta metodológica original, el modelo de regresión lineal múltiple con interacción se formula como:
+\subsection{Especificación del Modelo MCO}
+Siguiendo la especificación teórica del modelo minceriano con interacción por sexo, se estima la siguiente ecuación semilogarítmica:
 \begin{equation}
     \ln(\text{yoprcor}_i) = \beta_0 + \beta_1\,\text{mujer}_i + \beta_2\,\text{nhijos}_i + \beta_3\,(\text{mujer}_i \times \text{nhijos}_i) + \mathbf{X}_i'\boldsymbol{\gamma} + u_i
     \label{eq:mco_base_hombre}
@@ -92,22 +92,26 @@ donde la categoría de referencia son los \textbf{hombres} ($\text{mujer}_i = 0$
 \begin{itemize}
     \item $\beta_1$: Brecha salarial base mujer vs. hombre en ausencia de hijos ($\text{nhijos}_i = 0$).
     \item $\beta_2$: Efecto de un hijo adicional en los ingresos de los \textbf{hombres}.
-    \item $\beta_3$: Coeficiente diferencial de interacción (penalización adicional relativa a la mujer).
-    \item Efecto total en mujeres: $\beta_2 + \beta_3$.
+    \item $\beta_3$: Coeficiente diferencial de interés: captura la penalización adicional relativa por cada hijo que recae sobre las mujeres (\textit{child penalty differential}).
 \end{itemize}
 
-\subsection{Especificación Dual Alternativa (Enfoque B: Base Mujeres)}
-Para facilitar una lectura directa sin requerir combinaciones lineales, se estima paralelamente la especificación simétrica donde las \textbf{mujeres son la categoría base} y la dummy es $\text{hombre}_i = 1$:
+El vector de controles $\mathbf{X}_i$ se incorpora de forma secuencial:
+\begin{itemize}
+    \item \textbf{Capital Humano:} Años de escolaridad ($\text{esc}_i$), edad y edad al cuadrado ($\text{edad}_i, \text{edad}_i^2$) para modelar la concavidad del ciclo de vida.
+    \item \textbf{Oferta Laboral:} Horas semanales trabajadas habitualmente ($\text{horas}_i$).
+    \item \textbf{Geografía y Especialización:} Dummy de área rural ($\text{rural}_i$), efectos fijos por región administrativa y área de estudios superiores.
+\end{itemize}
+
+\subsection{Interpretación Marginal y Test de Hipótesis}
+El efecto marginal de un hijo adicional para las mujeres está dado por la suma de parámetros:
 \begin{equation}
-    \ln(\text{yoprcor}_i) = \alpha_0 + \alpha_1\,\text{hombre}_i + \alpha_2\,\text{nhijos}_i + \alpha_3\,(\text{hombre}_i \times \text{nhijos}_i) + \mathbf{X}_i'\boldsymbol{\gamma} + u_i
-    \label{eq:mco_base_mujer}
+    \frac{\partial \mathbb{E}[\ln(Y) \mid \mathbf{X}]}{\partial \text{nhijos}} \Bigg|_{\text{mujer}=1} = \beta_2 + \beta_3
 \end{equation}
-Ambos modelos son formalmente idénticos ($R^2$ idéntico, mismos residuos). La equivalencia teórica y empírica de sus parámetros es exacta:
-\begin{align*}
-    \alpha_1 &= -\beta_1 \quad (\text{prima del hombre sin hijos vs. mujer sin hijos}) \\
-    \alpha_2 &= \beta_2 + \beta_3 \quad (\text{efecto directo del hijo en mujeres}) \\
-    \alpha_3 &= -\beta_3 \quad (\text{ventaja relativa masculina ante la paternidad})
-\end{align*}
+Se contrasta formalmente la hipótesis nula de nulidad de penalización en mujeres:
+\begin{equation*}
+    H_0: \beta_2 + \beta_3 = 0 \quad \text{vs.} \quad H_1: \beta_2 + \beta_3 < 0
+\end{equation*}
+mediante un test $F$ de restricciones lineales (\texttt{linearHypothesis}) con matriz de covarianzas robusta a heterocedasticidad $HC_1$.
 
 % ------------------------------------------------------------------------------
 \section{Resultados Empíricos}
@@ -147,7 +151,7 @@ La Figura \ref{fig:poblacional} muestra la curva agregada para toda la població
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.88\textwidth]{grafico1_child_penalty_poblacional.png}
+\includegraphics[width=0.85\textwidth]{grafico1_child_penalty_poblacional.png}
 \caption{Efecto del Número de Hijos sobre el Ingreso Medio en el Total Poblacional (Sin Dummy de Género)}
 \label{fig:poblacional}
 \end{figure}
@@ -155,12 +159,12 @@ La Figura \ref{fig:poblacional} muestra la curva agregada para toda la població
 Al incorporar la distinción de género (Figura \ref{fig:genero}), dividiendo la muestra en dos paneles complementarios ($\text{Dummy} = 0$ para hombres y $\text{Dummy} = 1$ para mujeres), la divergencia es contundente:
 \begin{itemize}
     \item \textbf{Panel Hombres ($\text{Dummy} = 0$):} El ingreso medio masculino muestra gran estabilidad ante la presencia de hijos, situándose en \$1.069.450 para quienes no tienen hijos, \$988.201 con 1 hijo, \$1.024.444 con 2 hijos y \$905.799 con 3 o más hijos. La pendiente es esencialmente plana en los tramos centrales de fecundidad familiar.
-    \item \textbf{Panel Mujeres ($\text{Dummy} = 1$):} En marcado contraste, las mujeres experimentan un derrumbe sistemático del ingreso laboral: desde \$981.866 en mujeres sin hijos hasta \$783.594 al primer hijo (caída abrupta de $-20.2\%$), \$714.766 con dos hijos ($-27.2\%$) y \$602.236 con tres o más hijos ($-38.7\%$).
+    \item \textbf{Panel Mujeres ($\text{Dummy} = 1$):} En marcado contraste, las mujeres experimentan un derrumbe sistemático del ingreso laboral: desde \$981.866 en mujeres sin hijos hasta \$783.594 al primer hijo (caída inmediata de $-20.2\%$), \$714.766 con dos hijos ($-27.2\%$) y \$602.236 con tres o más hijos ($-38.7\%$).
 \end{itemize}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{grafico2_child_penalty_genero.png}
+\includegraphics[width=0.95\textwidth]{grafico2_child_penalty_genero.png}
 \caption{Asimetría de la Penalización por Hijos: Hombres ($\text{Dummy}=0$) vs. Mujeres ($\text{Dummy}=1$)}
 \label{fig:genero}
 \end{figure}
@@ -218,34 +222,11 @@ $R^2$ Ajustado & 0.0708 & 0.3285 & 0.4163 & 0.4204 & 0.4195 \\
 }
 \end{table}
 
-\subsection{Tabla de Equivalencia Dual (Modelo 4)}
-El Cuadro \ref{tab:dual} resume la equivalencia exacta entre ambas parametrizaciones para el Modelo 4 Principal, permitiendo contrastar la lectura directa de cada enfoque.
-
-\begin{table}[htbp]
-\centering
-\caption{Equivalencia de Estimaciones: Base Hombres vs. Base Mujeres (Modelo 4)}
-\label{tab:dual}
-\small
-\begin{tabular}{lcc}
-\toprule
-\textbf{Efecto Económico} & \textbf{Enfoque A (Base Hombres)} & \textbf{Enfoque B (Base Mujeres)} \\
-\midrule
-Efecto Hijos en Hombres & $\hat{\beta}_2 = +0.0084^{**}$ & $\hat{\alpha}_2 + \hat{\alpha}_3 = +0.0084^{**}$ \\
-Efecto Hijos en Mujeres (\textit{Child Penalty}) & $\hat{\beta}_2 + \hat{\beta}_3 = \mathbf{-0.0591^{***}}$ & $\hat{\alpha}_2 = \mathbf{-0.0591^{***}}$ \\
-Diferencial por Sexo & $\hat{\beta}_3 = -0.0675^{***}$ & $\hat{\alpha}_3 = +0.0675^{***}$ \\
-Brecha Base sin Hijos & $\hat{\beta}_1 = -0.1995^{***}$ & $\hat{\alpha}_1 = +0.1995^{***}$ \\
-\midrule
-$R^2$ Ajustado & 0.4204 & 0.4204 \\
-Observaciones ($N$) & 29.781 & 29.781 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \subsection{Interpretación y Mecanismos}
 \begin{enumerate}
     \item \textbf{Sesgo de Variable Omitida (OVB):} En el Modelo 1, $\hat{\beta}_2 = -0.0375$ era negativo debido a la correlación negativa entre fertilidad y nivel socioeconómico ($\text{Cov}(\text{nhijos}, \text{esc}) < 0$). Al controlar por escolaridad en el Modelo 2 ($\hat{\gamma}_{\text{esc}} \approx +12\%$), $\hat{\beta}_2$ se torna positivo ($+0.0147$).
     \item \textbf{Premio por paternidad en hombres:} En el Modelo 4, cada hijo se asocia a un modesto incremento de $+0.84\%$ en el ingreso de los hombres ($\hat{\beta}_2 = +0.0084$, $p < 0.05$).
-    \item \textbf{Penalización neta en mujeres:} Para las mujeres, cada hijo reduce el ingreso en un \textbf{$-5.74\%$} ($\hat{\beta}_2 + \hat{\beta}_3 = \hat{\alpha}_2 = -0.0591$, $p < 0.001$).
+    \item \textbf{Penalización neta en mujeres:} Para las mujeres, cada hijo reduce el ingreso en un \textbf{$-5.74\%$} ($\hat{\beta}_2 + \hat{\beta}_3 = 0.0084 - 0.0675 = -0.0591$, $p < 0.001$, con $\text{SE} = 0.0051$).
     \item \textbf{Canal de intensidad laboral:} Al incorporar las horas habituales (M2 vs. M3), el diferencial $\beta_3$ se modera de $-0.0921$ a $-0.0672$, evidenciando que aproximadamente un 27\% de la brecha por hijo opera a través de la reducción de la jornada laboral hacia empleos de tiempo parcial.
 \end{enumerate}
 
