@@ -37,12 +37,12 @@
 \maketitle
 
 \begin{abstract}
-Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. Para robustez y transparencia analítica, se contrastan dos parametrizaciones duales (base masculina y base femenina), y se implementa un análisis formal de mediación para evaluar el rol de los años de inactividad e interrupción laboral asociados al período de cuidado y postnatal.
+Este trabajo analiza empíricamente la relación entre la carga parental y el ingreso de la ocupación principal en Chile utilizando la Encuesta de Caracterización Socioeconómica Nacional (CASEN 2024). En particular, se evalúa si la penalización por hijos (\textit{child penalty}) difiere según el género en una muestra de $N = 29.781$ personas ocupadas de 25 a 45 años. Mediante especificaciones secuenciales de Mínimos Cuadrados Ordinarios (MCO) con interacción y errores estándar robustos a heterocedasticidad ($HC_1$), se documenta que la presencia de un hijo adicional incrementa ligeramente el ingreso en los hombres ($+0.84\%$, $p < 0.05$), reflejando el fenómeno de \textit{fatherhood wage premium}, mientras que en las mujeres reduce el ingreso en un $-5.74\%$ ($p < 0.001$), arrojando una brecha penalizadora neta de $-6.75$ puntos porcentuales. La evidencia gráfica ilustra una pronunciada divergencia: mientras el ingreso masculino se mantiene estable ante la paternidad, el ingreso femenino experimenta caídas del $20.2\%$ al primer hijo y hasta un $38.7\%$ con tres o más hijos. Se complementa con un análisis de mediación sobre años de cuidado intensivo preescolar e interrupción de carrera.
 \end{abstract}
 
 \vspace{0.3cm}
 \noindent \textbf{Clasificación JEL:} J13, J16, J22, J31. \\
-\textbf{Palabras clave:} Brecha de género, penalización por hijo (\textit{child penalty}), MCO, mediación causal, CASEN 2024, ecuación de Mincer.
+\textbf{Palabras clave:} Brecha de género, penalización por hijo (\textit{child penalty}), MCO, análisis gráfico, CASEN 2024, ecuación de Mincer.
 
 \vspace{0.5cm}
 
@@ -139,6 +139,33 @@ Horas semanales habituales & 44.1 & 7.8 & 38.9 & 10.4 & -5.2 & $<0.001$ \\
 \end{tabular}
 }
 \end{table}
+
+\subsection{Evidencia Gráfica del Child Penalty: Análisis Poblacional y por Género}
+Para complementar el análisis econométrico, se examina la relación empírica entre el número de hijos en el hogar y el ingreso laboral medio.
+
+La Figura \ref{fig:poblacional} muestra la curva agregada para toda la población analítica sin desagregar por sexo. Se aprecia una relación aparentemente decreciente y monótona: los trabajadores sin hijos promedian \$1.033.883 CLP, mientras que con 1 hijo el ingreso cae a \$878.132, con 2 hijos a \$860.120 y con 3 o más hijos a \$747.112 CLP. No obstante, este promedio agregado enmascara una heterogeneidad estructural decisiva según el sexo del trabajador.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\textwidth]{grafico1_child_penalty_poblacional.png}
+\caption{Efecto del Número de Hijos sobre el Ingreso Medio en el Total Poblacional (Sin Dummy de Género)}
+\label{fig:poblacional}
+\end{figure}
+
+Al incorporar la distinción de género (Figura \ref{fig:genero}), dividiendo la muestra en dos paneles complementarios ($\text{Dummy} = 0$ para hombres y $\text{Dummy} = 1$ para mujeres), la divergencia es contundente:
+\begin{itemize}
+    \item \textbf{Panel Hombres ($\text{Dummy} = 0$):} El ingreso medio masculino muestra gran estabilidad ante la presencia de hijos, situándose en \$1.069.450 para quienes no tienen hijos, \$988.201 con 1 hijo, \$1.024.444 con 2 hijos y \$905.799 con 3 o más hijos. La pendiente es esencialmente plana en los tramos centrales de fecundidad familiar.
+    \item \textbf{Panel Mujeres ($\text{Dummy} = 1$):} En marcado contraste, las mujeres experimentan un derrumbe sistemático del ingreso laboral: desde \$981.866 en mujeres sin hijos hasta \$783.594 al primer hijo (caída abrupta de $-20.2\%$), \$714.766 con dos hijos ($-27.2\%$) y \$602.236 con tres o más hijos ($-38.7\%$).
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{grafico2_child_penalty_genero.png}
+\caption{Asimetría de la Penalización por Hijos: Hombres ($\text{Dummy}=0$) vs. Mujeres ($\text{Dummy}=1$)}
+\label{fig:genero}
+\end{figure}
+
+Esta evidencia gráfica demuestra visualmente que la brecha salarial se expande drásticamente con la llegada de los hijos: pasa de un modesto $8.2\%$ en personas sin hijos a un $20.7\%$ con 1 hijo, $30.2\%$ con 2 hijos y más del $33.5\%$ con 3 o más hijos, motivando el término de interacción econométrico estimado a continuación.
 
 \subsection{Modelos Secuenciales (Especificación Principal: Base Hombres)}
 El Cuadro \ref{tab:regresiones} presenta la estimación secuencial del Modelo Principal (Ecuación \ref{eq:mco_base_hombre}) con errores estándar robustos $HC_1$.
